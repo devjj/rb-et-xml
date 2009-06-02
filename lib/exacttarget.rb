@@ -159,8 +159,8 @@ module ExactTarget
           xml.search_type 'emailid'
           xml.search_value email_id
           xml.search_value2 subscriber_id
-          xml.from_name options[:sender_name]
-          xml.from_email options[:sender_email_address]
+          xml.from_name options[:sender_name] unless options[:sender_name].blank?
+          xml.from_email options[:sender_email_address] unless options[:sender_email_address].blank?
         end
       end
       
