@@ -209,7 +209,7 @@ module ExactTarget
     
     private
     def parse_diagnostic_response(data)
-      xml = Document.new(data)
+      xml = REXML::Document.new(data)
       
       element = xml.elements['exacttarget/system/diagnostics/Ping']
       
@@ -221,7 +221,7 @@ module ExactTarget
     end
     
     def parse_add_subscriber_response(data)
-      xml = Document.new(data)
+      xml = REXML::Document.new(data)
       
       element = xml.elements['exacttarget/system/subscriber/subscriber_info']
       
@@ -233,7 +233,7 @@ module ExactTarget
     end
     
     def parse_get_subscriber_response(data)
-      xml = Document.new(data)
+      xml = REXML::Document.new(data)
       
       subscribers = []
       
@@ -251,7 +251,7 @@ module ExactTarget
     end
     
     def parse_send_to_subscriber_response(data)
-      xml = Document.new(data)
+      xml = REXML::Document.new(data)
       
       element = xml.elements['exacttarget/system/job/job_info']
       
@@ -263,7 +263,7 @@ module ExactTarget
     end
     
     def parse_delete_subscriber_response(data)
-      xml = Document.new(data)
+      xml = REXML::Document.new(data)
       
       element = xml.elements['exacttarget/system/subscriber/subscriber_info']
       
