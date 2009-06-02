@@ -12,10 +12,6 @@ module ExactTarget
       @debug    = options[:debug] || false
     end
     
-    def add_subscriber(name, email_address, attributes = {})
-      
-    end
-    
     def online?
       doc = ''
       xml = Builder::XmlMarkup.new(:target => doc, :indent => 1)
