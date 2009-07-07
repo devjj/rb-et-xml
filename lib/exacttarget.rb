@@ -70,6 +70,40 @@ module ExactTarget
       
       result
     end
+
+    def update_subscriber(email_address, list_id, attributes = {})
+      doc = ''
+      xml = Builder::XmlMarkup.new(:target => doc, :indent => 1)
+      
+      xml.instruct!
+      xml.exacttarget do |xml|
+        xml.authorization do |xml|
+          xml.username @user
+          xml.password @password
+        end
+        xml.system do |xml|
+          xml.system_name 'subscriber'
+          xml.action 'edit'
+          xml.search_type 'listid'
+          xml.search_value list_id
+          xml.search_value2 email_address
+          xml.values do |xml|
+            attributes.keys.each do |key|
+              formatted_key_name = format_attribute(key)
+              value = attributes[key]
+              
+              xml.tag! formatted_key_name, value
+            end
+          end
+        end
+      end
+      
+      response = post(doc)
+      
+      result = parse_update_subscriber_response(response.body)
+      
+      result
+    end
     
     def delete_subscriber_from_list(email_address, list_id)
       doc = ''
@@ -135,7 +169,11 @@ module ExactTarget
       # Get subscriber_id if it was not provided
       if subscriber_id.blank?
         subscriber = get_subscriber(email_address)
-        subscriber_id = subscriber['subid']
+        begin
+          subscriber_id = subscriber['subid']
+        rescue
+          raise ExactTargetError.new("Subscriber \"#{email_address}\" does not seem to exist")
+        end
         
         debug "Found \"#{subscriber_id}\" for #{email_address}"
         
@@ -221,6 +259,18 @@ module ExactTarget
     end
     
     def parse_add_subscriber_response(data)
+      xml = REXML::Document.new(data)
+      
+      element = xml.elements['exacttarget/system/subscriber/subscriber_info']
+      
+      if element && (element.text == 'Subscriber was added/updated successfully')
+        return xml.elements['exacttarget/system/subscriber/subscriber_description'].text
+      else
+        false
+      end
+    end
+
+    def parse_update_subscriber_response(data)
       xml = REXML::Document.new(data)
       
       element = xml.elements['exacttarget/system/subscriber/subscriber_info']
